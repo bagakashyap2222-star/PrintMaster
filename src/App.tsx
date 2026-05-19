@@ -753,6 +753,44 @@ export default function App() {
   const [showAlbumDesigner, setShowAlbumDesigner] = useState(false);
   const [showA3Designer, setShowA3Designer] = useState(false);
 
+  // User Opinion States
+  const [opinions, setOpinions] = useState<{ id: string; name: string; rating: number; text: string; date: string }[]>(() => {
+    const saved = localStorage.getItem('printmaster_opinions');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    return [
+      { id: '1', name: 'Rahul Sharma (Delhi)', rating: 5, text: 'PrintMaster is incredibly fast! I created a passport photo page in just 10 seconds. The local printing layout fits perfectly.', date: 'May 19, 2026' },
+      { id: '2', name: 'Pooja Verma (Mumbai)', rating: 5, text: 'A3 Page Designer is amazing. The Maroon Shubh Vivah template and gold gradients look very professional. Clients loved the results.', date: 'May 18, 2026' },
+      { id: '3', name: 'Karan Malhotra (Kolkata)', rating: 4, text: 'Great application! The new update with manual border adjustments and opacity controls gives full editing freedom.', date: 'May 17, 2026' }
+    ];
+  });
+  const [opinionName, setOpinionName] = useState('');
+  const [opinionText, setOpinionText] = useState('');
+  const [opinionRating, setOpinionRating] = useState(5);
+
+  const handleOpinionSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!opinionName.trim() || !opinionText.trim()) return;
+    const newOpinion = {
+      id: crypto.randomUUID(),
+      name: opinionName.trim(),
+      rating: opinionRating,
+      text: opinionText.trim(),
+      date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    };
+    const updated = [newOpinion, ...opinions];
+    setOpinions(updated);
+    localStorage.setItem('printmaster_opinions', JSON.stringify(updated));
+    setOpinionName('');
+    setOpinionText('');
+    setOpinionRating(5);
+  };
+
   const [globalEnhancements, setGlobalEnhancements] = useState({
     brightness: 0,
     contrast: 0,
@@ -1909,6 +1947,163 @@ export default function App() {
               </button>
             </div>
           )}
+
+          {/* About & User Opinions Section (No-Print) */}
+          <div className="no-print print:hidden w-full max-w-4xl mt-16 pt-12 border-t border-slate-200 dark:border-slate-800 flex flex-col gap-12 text-slate-800 dark:text-slate-100 mb-12">
+            
+            {/* About / Jankari Grid */}
+            <div className="bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl rounded-[2rem] border border-slate-200/50 dark:border-slate-700/50 p-8 md:p-10 shadow-xl transition-all duration-300 hover:shadow-2xl">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-3 bg-indigo-100 dark:bg-indigo-900/40 rounded-2xl">
+                  <Sparkles className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-violet-600 via-indigo-500 to-purple-600 dark:from-violet-400 dark:to-indigo-300">About PrintMaster</h2>
+                  <p className="text-slate-500 dark:text-slate-400 text-xs font-medium uppercase tracking-wider mt-0.5 font-bold">स्मार्ट प्रिंटिंग और एल्बम मेकर</p>
+                </div>
+              </div>
+              
+              <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed mb-6 font-medium">
+                PrintMaster एक आधुनिक और शक्तिशाली वेब-आधारित प्रिंट लेआउट और फोटो एल्बम डिज़ाइनर है। यह फोटो स्टूडियो, प्रिंटर ऑपरेटरों और फ़ोटोग्राफ़रों के लिए बनाया गया है ताकि वे मिनटों में A4 और A3 साइज़ के सुंदर एल्बम, कोलाज शीट, पासपोर्ट फोटो और आवश्यक डॉक्युमेंट्स (जैसे Aadhar/PAN कार्ड) तैयार कर सकें।
+              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="p-5 rounded-2xl bg-slate-50/50 dark:bg-slate-900/30 border border-slate-100 dark:border-slate-800 flex items-start gap-4">
+                  <div className="p-2.5 bg-violet-100 dark:bg-violet-900/30 rounded-xl shrink-0">
+                    <Grid className="w-5 h-5 text-violet-600 dark:text-violet-400" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-sm text-slate-800 dark:text-slate-200 mb-1">A4 दस्तावेज़ ऑटो-फ़ॉर्मेट</h4>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">पासपोर्ट फोटो, आधार कार्ड, पैन कार्ड और वॉलेट साइज़ प्रिंट्स को A4 पेपर पर अपने आप सटीक मार्जिन के साथ सेट करें।</p>
+                  </div>
+                </div>
+                
+                <div className="p-5 rounded-2xl bg-slate-50/50 dark:bg-slate-900/30 border border-slate-100 dark:border-slate-800 flex items-start gap-4">
+                  <div className="p-2.5 bg-pink-100 dark:bg-pink-900/30 rounded-xl shrink-0">
+                    <Layout className="w-5 h-5 text-pink-600 dark:text-pink-400" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-sm text-slate-800 dark:text-slate-200 mb-1">A3 एल्बम और सादी कोलाज</h4>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">प्रीमियम ट्रेडिशनल भारतीय शादी एल्बम टेम्पलेट्स (शुभ विवाह), भव्य ग्रेडिएंट्स, बॉर्डर्स और ओपेसिटी सेटिंग्स का लाभ उठाएं।</p>
+                  </div>
+                </div>
+
+                <div className="p-5 rounded-2xl bg-slate-50/50 dark:bg-slate-900/30 border border-slate-100 dark:border-slate-800 flex items-start gap-4">
+                  <div className="p-2.5 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl shrink-0">
+                    <Wand2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-sm text-slate-800 dark:text-slate-200 mb-1">AI पृष्ठभूमि हटाना (Background Removal)</h4>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">बिना किसी बाहरी सॉफ्टवेयर के, क्लाइंट-साइड वेब AI तकनीक की मदद से सीधे ब्राउज़र में ही फोटो के बैकग्राउंड को हटाएं।</p>
+                  </div>
+                </div>
+
+                <div className="p-5 rounded-2xl bg-slate-50/50 dark:bg-slate-900/30 border border-slate-100 dark:border-slate-800 flex items-start gap-4">
+                  <div className="p-2.5 bg-blue-100 dark:bg-blue-900/30 rounded-xl shrink-0">
+                    <Download className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-sm text-slate-800 dark:text-slate-200 mb-1">तेज़ गति और उच्च रिज़ॉल्यूशन</h4>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">ऑन-डिमांड लेज़ी लोडिंग और 800 DPI क्वालिटी के साथ तेज़, क्रिस्टल क्लियर पीडीएफ और जेपीईजी एक्सपोर्ट।</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Opinion/Feedback Section */}
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
+              
+              {/* Form Column */}
+              <div className="md:col-span-2 bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl rounded-[2rem] border border-slate-200/50 dark:border-slate-700/50 p-6 md:p-8 shadow-xl">
+                <h3 className="text-lg font-black text-slate-800 dark:text-slate-100 mb-1 tracking-tight">अपना अनुभव साझा करें</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mb-5 font-bold">प्रोजेक्ट पर अपना फीडबैक या राय लिखें:</p>
+                
+                <form onSubmit={handleOpinionSubmit} className="flex flex-col gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">आपका नाम</label>
+                    <input 
+                      type="text" 
+                      value={opinionName}
+                      onChange={(e) => setOpinionName(e.target.value)}
+                      placeholder="जैसे: राहुल कुमार"
+                      required
+                      className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">रेटिंग (Rating)</label>
+                    <div className="flex items-center gap-1">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <button
+                          key={star}
+                          type="button"
+                          onClick={() => setOpinionRating(star)}
+                          className="p-1 transition hover:scale-125 focus:outline-none"
+                        >
+                          <svg 
+                            className={`w-6 h-6 ${star <= opinionRating ? 'text-amber-400 fill-amber-400' : 'text-slate-300 dark:text-slate-600'}`} 
+                            fill="none" 
+                            stroke="currentColor" 
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.907c.969 0 1.371 1.24.588 1.81l-3.97 2.883a1 1 0 00-.364 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.971-2.883a1 1 0 00-1.178 0l-3.97 2.883c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.364-1.118l-3.97-2.883c-.783-.57-.38-1.81.588-1.81h4.906a1 1 0 00.951-.69l1.519-4.674z" />
+                          </svg>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">आपकी राय (Opinion)</label>
+                    <textarea 
+                      value={opinionText}
+                      onChange={(e) => setOpinionText(e.target.value)}
+                      placeholder="साइट के बारे में अपनी राय यहाँ लिखें..."
+                      required
+                      rows={3}
+                      className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition resize-none"
+                    />
+                  </div>
+
+                  <button 
+                    type="submit"
+                    className="w-full py-3 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white rounded-xl text-xs font-black shadow-lg shadow-violet-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                  >
+                    राय सबमिट करें (Submit Opinion)
+                  </button>
+                </form>
+              </div>
+
+              {/* Display Column */}
+              <div className="md:col-span-3 flex flex-col gap-4 overflow-y-auto max-h-[390px] pr-2">
+                <h3 className="text-lg font-black text-slate-800 dark:text-slate-100 mb-1 tracking-tight flex items-center gap-2">
+                  <span>उपयोगकर्ताओं की राय</span>
+                  <span className="text-[11px] bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 px-2 py-0.5 rounded-full font-bold">{opinions.length}</span>
+                </h3>
+                
+                {opinions.map((op) => (
+                  <div key={op.id} className="bg-white/60 dark:bg-slate-800/60 border border-slate-200/50 dark:border-slate-700/50 p-5 rounded-2xl shadow-sm flex flex-col gap-2 transition hover:shadow-md">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-sm text-slate-800 dark:text-slate-200">{op.name}</span>
+                        <div className="flex items-center">
+                          {Array.from({ length: op.rating }).map((_, i) => (
+                            <svg key={i} className="w-3.5 h-3.5 text-amber-400 fill-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                            </svg>
+                          ))}
+                        </div>
+                      </div>
+                      <span className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">{op.date}</span>
+                    </div>
+                    <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-medium">{op.text}</p>
+                  </div>
+                ))}
+              </div>
+
+            </div>
+          </div>
         </main>
         
         {/* Manual Config Modal */}
