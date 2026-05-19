@@ -1993,12 +1993,12 @@ export default function App() {
                   </div>
                   <div>
                     <h4 className="font-bold text-sm text-slate-800 dark:text-slate-200 mb-1">
-                      {isEnglish ? "A4 Document Auto-Format" : "A4 दस्तावेज़ ऑटो-फ़ॉर्मेट"}
+                      {isEnglish ? "Passport, Aadhar & Doc Layouts" : "पासपोर्ट, आधार व डॉक्युमेंट फ़ॉर्मेट्स"}
                     </h4>
                     <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
                       {isEnglish 
-                        ? "Automatically format passport photos, Aadhar cards, PAN cards, and wallet prints onto A4 sheets with precise margins."
-                        : "पासपोर्ट फोटो, आधार कार्ड, पैन कार्ड और वॉलेट साइज़ प्रिंट्स को A4 पेपर पर अपने आप सटीक मार्जिन के साथ सेट करें।"
+                        ? "Quickly print 3.5x4.5 cm Passport photos (4, 8, 16, 32 prints), Aadhar Card & PAN Card (front + back) wallet dimensions, Voter IDs, and e-Shram layouts with perfect resolution."
+                        : "A4 पेपर पर पासपोर्ट साइज फोटो (3.5x4.5 सेमी के 4, 8, 16, 32 प्रिंट), आधार कार्ड और पैन कार्ड (फ्रंट + बैक), वोटर आईडी और ई-श्रम कार्ड को सही साइज और मार्जिन के साथ प्रिंट करें।"
                       }
                     </p>
                   </div>
