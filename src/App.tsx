@@ -1216,17 +1216,42 @@ export default function App() {
         }
         
         const originalPage = pagesElements[i] as HTMLElement;
-        const scale = pdfDpi / 96;
+        const clonedNode = originalPage.cloneNode(true) as HTMLElement;
         
-        const canvas = await html2canvas(originalPage, {
-          scale: scale,
-          useCORS: true,
-          logging: false,
-          ignoreElements: (element) => element.classList.contains('no-print')
+        // Ensure no-print elements are hidden
+        const noPrintElements = clonedNode.querySelectorAll('.no-print');
+        noPrintElements.forEach(el => {
+          (el as HTMLElement).style.display = 'none';
         });
+
+        // Set fixed isolated styles to bypass viewport/scroll issues
+        Object.assign(clonedNode.style, {
+          position: 'fixed',
+          top: '0',
+          left: '0',
+          zIndex: '-9999',
+          transform: 'none',
+          padding: '0.3in',
+          width: '8.27in',
+          height: '11.69in',
+          backgroundColor: 'white'
+        });
+
+        document.body.appendChild(clonedNode);
         
-        const imgData = canvas.toDataURL('image/jpeg', 0.95);
-        pdf.addImage(imgData, 'JPEG', 0, 0, 8.27, 11.69);
+        try {
+          const scale = pdfDpi / 96;
+          const canvas = await html2canvas(clonedNode, {
+            scale: scale,
+            useCORS: true,
+            logging: false
+          });
+          
+          const imgData = canvas.toDataURL('image/jpeg', 0.95);
+          pdf.addImage(imgData, 'JPEG', 0, 0, 8.27, 11.69);
+        } finally {
+          document.body.removeChild(clonedNode);
+        }
       }
       
       pdf.save(`photos_document_${Date.now()}.pdf`);

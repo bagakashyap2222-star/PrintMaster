@@ -924,30 +924,51 @@ export const A3Designer: React.FC<A3DesignerProps> = ({ onClose, initialImages =
       await new Promise(resolve => setTimeout(resolve, 300)); // Render cycle sync
 
       const scale = pdfQuality / 96; // DPI scaling
+      const width = node.offsetWidth;
+      const height = node.offsetHeight;
 
-      const canvas = await html2canvas(node, {
-        scale: scale,
-        useCORS: true,
-        logging: false,
-        ignoreElements: (element) => element.classList.contains('no-print')
-      });
+      // Clone DOM node for offscreen high-res render
+      const clone = node.cloneNode(true) as HTMLDivElement;
+      clone.style.transform = 'none';
+      clone.style.transformOrigin = 'top left';
+      clone.style.width = `${width}px`;
+      clone.style.height = `${height}px`;
 
-      const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+      const container = document.createElement('div');
+      container.style.position = 'fixed';
+      container.style.top = '-99999px';
+      container.style.left = '-99999px';
+      container.style.width = `${width}px`;
+      container.style.height = `${height}px`;
+      container.style.overflow = 'hidden';
+      container.appendChild(clone);
+      document.body.appendChild(container);
 
-      // Generate PDF doc
-      const { default: jsPDF } = await import('jspdf');
-      const isLandscape = orientation === 'landscape';
-      const pdf = new jsPDF({
-        orientation: isLandscape ? 'landscape' : 'portrait',
-        unit: 'mm',
-        format: 'a3'
-      });
+      try {
+        const canvas = await html2canvas(clone, {
+          scale: scale,
+          useCORS: true,
+          logging: false
+        });
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+        
+        // Generate PDF doc
+        const { default: jsPDF } = await import('jspdf');
+        const isLandscape = orientation === 'landscape';
+        const pdf = new jsPDF({
+          orientation: isLandscape ? 'landscape' : 'portrait',
+          unit: 'mm',
+          format: 'a3'
+        });
 
-      const pdfW = isLandscape ? 420 : 297;
-      const pdfH = isLandscape ? 297 : 420;
+        const pdfW = isLandscape ? 420 : 297;
+        const pdfH = isLandscape ? 297 : 420;
 
-      pdf.addImage(dataUrl, 'JPEG', 0, 0, pdfW, pdfH, undefined, 'FAST');
-      pdf.save(`PrintMaster_A3_Design_${pdfQuality}DPI.pdf`);
+        pdf.addImage(dataUrl, 'JPEG', 0, 0, pdfW, pdfH, undefined, 'FAST');
+        pdf.save(`PrintMaster_A3_Design_${pdfQuality}DPI.pdf`);
+      } finally {
+        document.body.removeChild(container);
+      }
     } catch (err) {
       console.error("PDF generation failed:", err);
       alert("Failed to export high quality PDF. Please try again.");
@@ -967,46 +988,68 @@ export const A3Designer: React.FC<A3DesignerProps> = ({ onClose, initialImages =
       setSelectedPlacementId(null);
       await new Promise(r => setTimeout(r, 300));
 
-      const canvas = await html2canvas(node, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        ignoreElements: (element) => element.classList.contains('no-print')
-      });
-      const dataUrl = canvas.toDataURL('image/jpeg', 0.98);
-      
-      // Create hidden print iframe
-      const printFrame = document.createElement('iframe');
-      printFrame.style.position = 'fixed';
-      printFrame.style.bottom = '0';
-      printFrame.style.right = '0';
-      printFrame.style.width = '0px';
-      printFrame.style.height = '0px';
-      printFrame.style.border = '0px';
-      document.body.appendChild(printFrame);
+      const width = node.offsetWidth;
+      const height = node.offsetHeight;
 
-      const frameDoc = printFrame.contentWindow?.document;
-      if (frameDoc) {
-        frameDoc.write(`
-          <html>
-            <head>
-              <title>Print Master A3 Design</title>
-              <style>
-                @page { size: A3 ${orientation}; margin: 0; }
-                body { margin: 0; display: flex; align-items: center; justify-content: center; background: #fff; }
-                img { width: 100%; height: 100%; object-fit: contain; }
-              </style>
-            </head>
-            <body>
-              <img src="${dataUrl}" onload="window.print();" />
-            </body>
-          </html>
-        `);
-        frameDoc.close();
+      const clone = node.cloneNode(true) as HTMLDivElement;
+      clone.style.transform = 'none';
+      clone.style.transformOrigin = 'top left';
+      clone.style.width = `${width}px`;
+      clone.style.height = `${height}px`;
 
-        // Allow printer overlay time
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        document.body.removeChild(printFrame);
+      const container = document.createElement('div');
+      container.style.position = 'fixed';
+      container.style.top = '-99999px';
+      container.style.left = '-99999px';
+      container.style.width = `${width}px`;
+      container.style.height = `${height}px`;
+      container.style.overflow = 'hidden';
+      container.appendChild(clone);
+      document.body.appendChild(container);
+
+      try {
+        const canvas = await html2canvas(clone, {
+          scale: 2,
+          useCORS: true,
+          logging: false
+        });
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.98);
+        
+        // Create hidden print iframe
+        const printFrame = document.createElement('iframe');
+        printFrame.style.position = 'fixed';
+        printFrame.style.bottom = '0';
+        printFrame.style.right = '0';
+        printFrame.style.width = '0px';
+        printFrame.style.height = '0px';
+        printFrame.style.border = '0px';
+        document.body.appendChild(printFrame);
+
+        const frameDoc = printFrame.contentWindow?.document;
+        if (frameDoc) {
+          frameDoc.write(`
+            <html>
+              <head>
+                <title>Print Master A3 Design</title>
+                <style>
+                  @page { size: A3 ${orientation}; margin: 0; }
+                  body { margin: 0; display: flex; align-items: center; justify-content: center; background: #fff; }
+                  img { width: 100%; height: 100%; object-fit: contain; }
+                </style>
+              </head>
+              <body>
+                <img src="${dataUrl}" onload="window.print();" />
+              </body>
+            </html>
+          `);
+          frameDoc.close();
+
+          // Allow printer overlay time
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          document.body.removeChild(printFrame);
+        }
+      } finally {
+        document.body.removeChild(container);
       }
     } catch (err) {
       console.error("Direct print failed:", err);

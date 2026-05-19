@@ -453,21 +453,40 @@ export const AlbumDesigner: React.FC<AlbumDesignerProps> = ({ onClose, initialIm
 
       for (let i = 0; i < pageNodes.length; i++) {
         const node = pageNodes[i] as HTMLElement;
-        const scale = pdfQuality / 96;
+        const clonedNode = node.cloneNode(true) as HTMLElement;
         
-        const canvas = await html2canvas(node, {
-          scale: scale,
-          useCORS: true,
-          logging: false,
-          ignoreElements: (element) => element.classList.contains('no-print')
+        Object.assign(clonedNode.style, {
+          position: 'fixed',
+          top: '0',
+          left: '0',
+          zIndex: '-9999',
+          transform: 'none',
+          width: orientation === 'portrait' ? '1200px' : '1697px',
+          height: orientation === 'portrait' ? '1697px' : '1200px',
+          backgroundColor: node.getAttribute('data-bg-color') || '#ffffff',
+          visibility: 'visible',
+          opacity: '1'
         });
 
-        const imgData = canvas.toDataURL('image/jpeg', 0.95);
+        document.body.appendChild(clonedNode);
         
-        if (i > 0) pdf.addPage(format, orientation === 'portrait' ? 'p' : 'l');
-        const w = format[0];
-        const h = format[1];
-        pdf.addImage(imgData, 'JPEG', 0, 0, w, h, undefined, 'FAST');
+        try {
+          const scale = pdfQuality / 96;
+          const canvas = await html2canvas(clonedNode, {
+            scale: scale,
+            useCORS: true,
+            logging: false
+          });
+
+          const imgData = canvas.toDataURL('image/jpeg', 0.95);
+          
+          if (i > 0) pdf.addPage(format, orientation === 'portrait' ? 'p' : 'l');
+          const w = format[0];
+          const h = format[1];
+          pdf.addImage(imgData, 'JPEG', 0, 0, w, h, undefined, 'FAST');
+        } finally {
+          document.body.removeChild(clonedNode);
+        }
       }
       
       pdf.save(`PhotoAlbum_${albumSize}.pdf`);
@@ -489,15 +508,34 @@ export const AlbumDesigner: React.FC<AlbumDesignerProps> = ({ onClose, initialIm
       
       for (let i = 0; i < pageNodes.length; i++) {
         const node = pageNodes[i] as HTMLElement;
+        const clonedNode = node.cloneNode(true) as HTMLElement;
         
-        const canvas = await html2canvas(node, {
-          scale: 2,
-          useCORS: true,
-          logging: false,
-          ignoreElements: (element) => element.classList.contains('no-print')
+        Object.assign(clonedNode.style, {
+          position: 'fixed',
+          top: '0',
+          left: '0',
+          zIndex: '-9999',
+          transform: 'none',
+          width: orientation === 'portrait' ? '1200px' : '1697px',
+          height: orientation === 'portrait' ? '1697px' : '1200px',
+          backgroundColor: node.getAttribute('data-bg-color') || '#ffffff',
+          visibility: 'visible',
+          opacity: '1'
         });
-        const imgData = canvas.toDataURL('image/jpeg', 0.95);
-        dataUrls.push(imgData);
+
+        document.body.appendChild(clonedNode);
+        
+        try {
+          const canvas = await html2canvas(clonedNode, {
+            scale: 2,
+            useCORS: true,
+            logging: false
+          });
+          const imgData = canvas.toDataURL('image/jpeg', 0.95);
+          dataUrls.push(imgData);
+        } finally {
+          document.body.removeChild(clonedNode);
+        }
       }
 
       const existingIframe = document.getElementById('printIframe');
