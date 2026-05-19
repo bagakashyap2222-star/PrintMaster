@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { ALBUM_TEMPLATES, AlbumPage, AlbumTemplate, LayoutOrientation, PlacedImage } from './templates';
 import { jsPDF } from 'jspdf';
-import html2canvas from 'html2canvas-pro';
+import html2canvas from 'html2canvas';
+import domtoimage from 'dom-to-image';
 import { 
   Plus, Minus, Layout, Palette, Settings, Type, Shuffle, Maximize2, 
   Trash2, X, Download, LayoutTemplate, Square, ChevronLeft,
@@ -472,13 +473,17 @@ export const AlbumDesigner: React.FC<AlbumDesignerProps> = ({ onClose, initialIm
         
         try {
           const scale = pdfQuality / 96;
-          const canvas = await html2canvas(clonedNode, {
-            scale: scale,
-            useCORS: true,
-            logging: false
+          const imgData = await domtoimage.toJpeg(clonedNode, {
+            quality: 0.95,
+            style: {
+              transform: `scale(${scale})`,
+              transformOrigin: 'top left',
+              width: clonedNode.offsetWidth + 'px',
+              height: clonedNode.offsetHeight + 'px'
+            },
+            width: clonedNode.offsetWidth * scale,
+            height: clonedNode.offsetHeight * scale
           });
-
-          const imgData = canvas.toDataURL('image/jpeg', 0.95);
           
           if (i > 0) pdf.addPage(format, orientation === 'portrait' ? 'p' : 'l');
           const w = format[0];
@@ -526,12 +531,17 @@ export const AlbumDesigner: React.FC<AlbumDesignerProps> = ({ onClose, initialIm
         document.body.appendChild(clonedNode);
         
         try {
-          const canvas = await html2canvas(clonedNode, {
-            scale: 2,
-            useCORS: true,
-            logging: false
+          const imgData = await domtoimage.toJpeg(clonedNode, {
+            quality: 0.95,
+            width: clonedNode.offsetWidth * 2,
+            height: clonedNode.offsetHeight * 2,
+            style: {
+              transform: 'scale(2)',
+              transformOrigin: 'top left',
+              width: clonedNode.offsetWidth + 'px',
+              height: clonedNode.offsetHeight + 'px'
+            }
           });
-          const imgData = canvas.toDataURL('image/jpeg', 0.95);
           dataUrls.push(imgData);
         } finally {
           document.body.removeChild(clonedNode);

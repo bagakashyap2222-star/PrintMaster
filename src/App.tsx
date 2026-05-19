@@ -1,7 +1,6 @@
 import React, { useState, useRef, ChangeEvent, useEffect } from 'react';
 import { jsPDF } from 'jspdf';
-import html2canvas from 'html2canvas-pro';
-
+import domtoimage from 'dom-to-image';
 
 import debounce from 'lodash/debounce';
 import { 
@@ -1240,14 +1239,20 @@ export default function App() {
         document.body.appendChild(clonedNode);
         
         try {
+          // Standard browser DPI is 96.
           const scale = pdfDpi / 96;
-          const canvas = await html2canvas(clonedNode, {
-            scale: scale,
-            useCORS: true,
-            logging: false
+          const imgData = await domtoimage.toJpeg(clonedNode, {
+            quality: 0.95,
+            style: {
+              transform: `scale(${scale})`,
+              transformOrigin: 'top left',
+              width: clonedNode.offsetWidth + 'px',
+              height: clonedNode.offsetHeight + 'px'
+            },
+            width: clonedNode.offsetWidth * scale,
+            height: clonedNode.offsetHeight * scale
           });
           
-          const imgData = canvas.toDataURL('image/jpeg', 0.95);
           pdf.addImage(imgData, 'JPEG', 0, 0, 8.27, 11.69);
         } finally {
           document.body.removeChild(clonedNode);
