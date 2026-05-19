@@ -11,6 +11,7 @@ import {
   Copy, ClipboardPaste, ChevronsUp, ChevronsDown, ZoomIn, ZoomOut, AlignCenter, Crop as CropIcon, Square, Sun, Moon, Wand2, SlidersHorizontal, Layers, CheckCheck, RotateCcw, Sparkles
 } from 'lucide-react';
 import { applyImageFilters } from './utils/imageFilters';
+import { fileToBase64 } from './utils/fileHelpers';
 import {
   DndContext,
   closestCenter,
@@ -566,7 +567,7 @@ const BgRemoverToolModal = ({ onClose }: { onClose: () => void }) => {
     if (e.target.files && e.target.files[0]) {
       const f = e.target.files[0];
       setFile(f);
-      const url = URL.createObjectURL(f);
+      const url = await fileToBase64(f);
       setOriginalUrl(url);
       setRemovedBgUrl(null);
       setIsProcessing(true);
@@ -577,7 +578,7 @@ const BgRemoverToolModal = ({ onClose }: { onClose: () => void }) => {
           model: "isnet_quint8",
           progress: () => {} 
         });
-        setRemovedBgUrl(URL.createObjectURL(blob));
+        setRemovedBgUrl(await fileToBase64(blob));
       } catch (err) {
         console.error(err);
         setErrorMsg('Failed to remove background. Ensure the image is valid.');
@@ -898,7 +899,7 @@ export default function App() {
         model: "isnet_quint8",
         progress: () => {} 
       });
-      const bgRemovedUrl = URL.createObjectURL(blob);
+      const bgRemovedUrl = await fileToBase64(blob);
       setImages(prev => prev.map(img => img.id === selectedImageId ? { ...img, bgRemovedUrl, isRemovingBg: false } : img));
       
       setTimeout(() => {
@@ -1038,7 +1039,7 @@ export default function App() {
           console.error("Error parsing PDF:", error);
         }
       } else {
-        urls.push(URL.createObjectURL(file));
+        urls.push(await fileToBase64(file));
       }
 
       let fileImages: ImageItem[] = [];

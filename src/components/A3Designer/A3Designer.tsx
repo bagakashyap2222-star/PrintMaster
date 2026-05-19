@@ -6,6 +6,7 @@ import {
   ChevronsUp, ChevronsDown, ClipboardPaste, Copy, CheckCheck, Layers, FileText, Text, Eye, EyeOff, Sparkles, Move
 } from 'lucide-react';
 import domtoimage from 'dom-to-image';
+import { fileToBase64 } from '../../utils/fileHelpers';
 
 // Types
 export interface A3Placement {
@@ -604,10 +605,10 @@ export const A3Designer: React.FC<A3DesignerProps> = ({ onClose, initialImages =
     };
   }, [dragMode, handleMouseMove, handleMouseUp]);
 
-  const handleBgImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleBgImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const url = URL.createObjectURL(file);
+      const url = await fileToBase64(file);
       setCustomBgImageUrl(url);
       setCustomBgType('image');
     }
@@ -797,7 +798,7 @@ export const A3Designer: React.FC<A3DesignerProps> = ({ onClose, initialImages =
         }
       });
 
-      const processedUrl = URL.createObjectURL(resultBlob);
+      const processedUrl = await fileToBase64(resultBlob);
       updateSelectedPlacement({
         isRemovingBg: false,
         filters: {
@@ -820,12 +821,12 @@ export const A3Designer: React.FC<A3DesignerProps> = ({ onClose, initialImages =
     fileInputRef.current?.click();
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     const slotId = targetSlotForUploadRef.current;
     if (!file || !slotId) return;
 
-    const url = URL.createObjectURL(file);
+    const url = await fileToBase64(file);
     setPlacements(prev => prev.map(p => {
       if (p.id !== slotId) return p;
       return {

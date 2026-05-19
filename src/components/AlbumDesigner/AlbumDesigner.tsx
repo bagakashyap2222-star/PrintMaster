@@ -20,6 +20,7 @@ import {
   useDroppable
 } from '@dnd-kit/core';
 import { ImageItem, CropImageModal } from '../../App';
+import { fileToBase64 } from '../../utils/fileHelpers';
 
 interface AlbumDesignerProps {
   onClose: () => void;
@@ -615,9 +616,9 @@ export const AlbumDesigner: React.FC<AlbumDesignerProps> = ({ onClose, initialIm
         return;
       }
 
-      const newImages = await Promise.all(validFiles.map(file => {
-        return new Promise<ImageItem>((resolve) => {
-          const url = URL.createObjectURL(file);
+      const newImages = await Promise.all(validFiles.map(async file => {
+        return new Promise<ImageItem>(async (resolve) => {
+          const url = await fileToBase64(file);
           const img = new Image();
           img.onload = () => resolve({
             id: crypto.randomUUID(), url, originalUrl: url, rotation: 0, objectFit: 'cover', orientation: img.width > img.height ? 'landscape' : 'portrait'
@@ -782,7 +783,7 @@ export const AlbumDesigner: React.FC<AlbumDesignerProps> = ({ onClose, initialIm
         model: "isnet_quint8",
         progress: () => {} 
       });
-      const bgRemovedUrl = URL.createObjectURL(blob);
+      const bgRemovedUrl = await fileToBase64(blob);
       updateSelectedPlacement({ url: bgRemovedUrl, originalUrl: srcUrl });
     } catch (err) {
       console.error("Failed to remove background:", err);
@@ -1220,9 +1221,9 @@ export const AlbumDesigner: React.FC<AlbumDesignerProps> = ({ onClose, initialIm
                                type="file" 
                                accept="image/*" 
                                className="hidden" 
-                               onChange={(e) => {
+                               onChange={async (e) => {
                                    if (e.target.files && e.target.files[0]) {
-                                       const url = URL.createObjectURL(e.target.files[0]);
+                                       const url = await fileToBase64(e.target.files[0]);
                                        setPages(pages => pages.map(p => {
                                            if (p.id !== activePage.id) return p;
                                            return { ...p, placements: { ...p.placements, [selectedPlacementId]: { ...p.placements[selectedPlacementId], overlayUrl: url, overlayOpacity: p.placements[selectedPlacementId].overlayOpacity ?? 1 } } };
@@ -1535,9 +1536,9 @@ export const AlbumDesigner: React.FC<AlbumDesignerProps> = ({ onClose, initialIm
                       <div className="flex gap-2">
                         <label className="flex-1 bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded flex justify-center items-center py-1.5 cursor-pointer hover:bg-gray-50 transition text-xs font-semibold text-gray-700 dark:text-gray-200">
                           <Upload className="w-4 h-4 mr-1" /> Upload Image
-                          <input type="file" className="hidden" accept="image/*" onChange={(e) => {
+                          <input type="file" className="hidden" accept="image/*" onChange={async (e) => {
                             if(e.target.files && e.target.files.length > 0) {
-                              const url = URL.createObjectURL(e.target.files[0]);
+                              const url = await fileToBase64(e.target.files[0]);
                               setPages(prev => prev.map(p => p.id === activePageId ? { ...p, bgImage: url } : p));
                             }
                           }} />
