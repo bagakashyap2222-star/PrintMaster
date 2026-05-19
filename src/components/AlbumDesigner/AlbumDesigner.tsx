@@ -780,7 +780,6 @@ export const AlbumDesigner: React.FC<AlbumDesignerProps> = ({ onClose, initialIm
       const srcUrl = placement.originalUrl || placement.url;
       const { removeBackground } = await import('@imgly/background-removal');
       const blob = await removeBackground(srcUrl, { 
-        model: "isnet_quint8",
         progress: () => {} 
       });
       const bgRemovedUrl = await fileToBase64(blob);

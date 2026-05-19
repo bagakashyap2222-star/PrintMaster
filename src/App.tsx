@@ -575,7 +575,6 @@ const BgRemoverToolModal = ({ onClose }: { onClose: () => void }) => {
       try {
         const { removeBackground } = await import('@imgly/background-removal');
         const blob = await removeBackground(url, { 
-          model: "isnet_quint8",
           progress: () => {} 
         });
         setRemovedBgUrl(await fileToBase64(blob));
@@ -896,7 +895,6 @@ export default function App() {
       const srcUrl = selectedItem.originalUrl || selectedItem.url;
       const { removeBackground } = await import('@imgly/background-removal');
       const blob = await removeBackground(srcUrl, { 
-        model: "isnet_quint8",
         progress: () => {} 
       });
       const bgRemovedUrl = await fileToBase64(blob);

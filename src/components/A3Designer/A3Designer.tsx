@@ -792,7 +792,6 @@ export const A3Designer: React.FC<A3DesignerProps> = ({ onClose, initialImages =
 
       const { removeBackground } = await import('@imgly/background-removal');
       const resultBlob = await removeBackground(p.originalUrl || p.url, {
-        model: 'isnet_quint8', // Speedup active
         progress: (key, current, total) => {
           console.log(`AI Bg Removal Progress: ${Math.round((current / total) * 100)}%`);
         }
