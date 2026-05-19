@@ -772,6 +772,7 @@ export default function App() {
   const [opinionName, setOpinionName] = useState('');
   const [opinionText, setOpinionText] = useState('');
   const [opinionRating, setOpinionRating] = useState(5);
+  const [isEnglish, setIsEnglish] = useState(false);
 
   const handleOpinionSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -1953,18 +1954,36 @@ export default function App() {
             
             {/* About / Jankari Grid */}
             <div className="bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl rounded-[2rem] border border-slate-200/50 dark:border-slate-700/50 p-8 md:p-10 shadow-xl transition-all duration-300 hover:shadow-2xl">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-3 bg-indigo-100 dark:bg-indigo-900/40 rounded-2xl">
-                  <Sparkles className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+              <div className="flex items-center justify-between flex-wrap gap-4 mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="p-3 bg-indigo-100 dark:bg-indigo-900/40 rounded-2xl">
+                    <Sparkles className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-violet-600 via-indigo-500 to-purple-600 dark:from-violet-400 dark:to-indigo-300">
+                      {isEnglish ? "About PrintMaster" : "PrintMaster के बारे में"}
+                    </h2>
+                    <p className="text-slate-500 dark:text-slate-400 text-xs font-medium uppercase tracking-wider mt-0.5 font-bold">
+                      {isEnglish ? "Smart Printing & Album Designer" : "स्मार्ट प्रिंटिंग और एल्बम मेकर"}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h2 className="text-2xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-violet-600 via-indigo-500 to-purple-600 dark:from-violet-400 dark:to-indigo-300">About PrintMaster</h2>
-                  <p className="text-slate-500 dark:text-slate-400 text-xs font-medium uppercase tracking-wider mt-0.5 font-bold">स्मार्ट प्रिंटिंग और एल्बम मेकर</p>
-                </div>
+
+                {/* Language Toggle Button */}
+                <button
+                  type="button"
+                  onClick={() => setIsEnglish(!isEnglish)}
+                  className="px-4 py-2 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-2 shadow-sm"
+                >
+                  🌐 {isEnglish ? "Switch to Hindi (हिंदी)" : "Switch to English (English)"}
+                </button>
               </div>
               
               <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed mb-6 font-medium">
-                PrintMaster एक आधुनिक और शक्तिशाली वेब-आधारित प्रिंट लेआउट और फोटो एल्बम डिज़ाइनर है। यह फोटो स्टूडियो, प्रिंटर ऑपरेटरों और फ़ोटोग्राफ़रों के लिए बनाया गया है ताकि वे मिनटों में A4 और A3 साइज़ के सुंदर एल्बम, कोलाज शीट, पासपोर्ट फोटो और आवश्यक डॉक्युमेंट्स (जैसे Aadhar/PAN कार्ड) तैयार कर सकें।
+                {isEnglish 
+                  ? "PrintMaster is a modern and powerful web-based print layout and photo album designer. It is built for photo studios, print operators, and photographers to easily design beautiful albums, collage sheets, passport photos, and essential documents (like Aadhar/PAN cards) in A4 and A3 sizes in minutes."
+                  : "PrintMaster एक आधुनिक और शक्तिशाली वेब-आधारित प्रिंट लेआउट और फोटो एल्बम डिज़ाइनर है। यह फोटो स्टूडियो, प्रिंटर ऑपरेटरों और फ़ोटोग्राफ़रों के लिए बनाया गया है ताकि वे मिनटों में A4 और A3 साइज़ के सुंदर एल्बम, कोलाज शीट, पासपोर्ट फोटो और आवश्यक डॉक्युमेंट्स (जैसे Aadhar/PAN कार्ड) तैयार कर सकें।"
+                }
               </p>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1973,8 +1992,15 @@ export default function App() {
                     <Grid className="w-5 h-5 text-violet-600 dark:text-violet-400" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-sm text-slate-800 dark:text-slate-200 mb-1">A4 दस्तावेज़ ऑटो-फ़ॉर्मेट</h4>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">पासपोर्ट फोटो, आधार कार्ड, पैन कार्ड और वॉलेट साइज़ प्रिंट्स को A4 पेपर पर अपने आप सटीक मार्जिन के साथ सेट करें।</p>
+                    <h4 className="font-bold text-sm text-slate-800 dark:text-slate-200 mb-1">
+                      {isEnglish ? "A4 Document Auto-Format" : "A4 दस्तावेज़ ऑटो-फ़ॉर्मेट"}
+                    </h4>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                      {isEnglish 
+                        ? "Automatically format passport photos, Aadhar cards, PAN cards, and wallet prints onto A4 sheets with precise margins."
+                        : "पासपोर्ट फोटो, आधार कार्ड, पैन कार्ड और वॉलेट साइज़ प्रिंट्स को A4 पेपर पर अपने आप सटीक मार्जिन के साथ सेट करें।"
+                      }
+                    </p>
                   </div>
                 </div>
                 
@@ -1983,8 +2009,15 @@ export default function App() {
                     <Layout className="w-5 h-5 text-pink-600 dark:text-pink-400" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-sm text-slate-800 dark:text-slate-200 mb-1">A3 एल्बम और सादी कोलाज</h4>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">प्रीमियम ट्रेडिशनल भारतीय शादी एल्बम टेम्पलेट्स (शुभ विवाह), भव्य ग्रेडिएंट्स, बॉर्डर्स और ओपेसिटी सेटिंग्स का लाभ उठाएं।</p>
+                    <h4 className="font-bold text-sm text-slate-800 dark:text-slate-200 mb-1">
+                      {isEnglish ? "A3 Album & Collage Designer" : "A3 एल्बम और सादी कोलाज"}
+                    </h4>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                      {isEnglish 
+                        ? "Utilize premium traditional Indian wedding templates (Shubh Vivah), gorgeous gradients, custom borders, and layer controls."
+                        : "प्रीमियम ट्रेडिशनल भारतीय शादी एल्बम टेम्पलेट्स (शुभ विवाह), भव्य ग्रेडिएंट्स, बॉर्डर्स और ओपेसिटी सेटिंग्स का लाभ उठाएं।"
+                      }
+                    </p>
                   </div>
                 </div>
 
@@ -1993,8 +2026,15 @@ export default function App() {
                     <Wand2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-sm text-slate-800 dark:text-slate-200 mb-1">AI पृष्ठभूमि हटाना (Background Removal)</h4>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">बिना किसी बाहरी सॉफ्टवेयर के, क्लाइंट-साइड वेब AI तकनीक की मदद से सीधे ब्राउज़र में ही फोटो के बैकग्राउंड को हटाएं।</p>
+                    <h4 className="font-bold text-sm text-slate-800 dark:text-slate-200 mb-1">
+                      {isEnglish ? "AI Background Removal" : "AI पृष्ठभूमि हटाना (Background Removal)"}
+                    </h4>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                      {isEnglish 
+                        ? "Remove background from images directly inside the browser using client-side AI, with no external software required."
+                        : "बिना किसी बाहरी सॉफ्टवेयर के, क्लाइंट-साइड वेब AI तकनीक की मदद से सीधे ब्राउज़र में ही फोटो के बैकग्राउंड को हटाएं।"
+                      }
+                    </p>
                   </div>
                 </div>
 
@@ -2003,8 +2043,15 @@ export default function App() {
                     <Download className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-sm text-slate-800 dark:text-slate-200 mb-1">तेज़ गति और उच्च रिज़ॉल्यूशन</h4>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">ऑन-डिमांड लेज़ी लोडिंग और 800 DPI क्वालिटी के साथ तेज़, क्रिस्टल क्लियर पीडीएफ और जेपीईजी एक्सपोर्ट।</p>
+                    <h4 className="font-bold text-sm text-slate-800 dark:text-slate-200 mb-1">
+                      {isEnglish ? "High Speed & Resolution" : "तेज़ गति और उच्च रिज़ॉल्यूशन"}
+                    </h4>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                      {isEnglish 
+                        ? "On-demand lazy loading and up to 800 DPI print quality exports for crisp, clear PDF and JPEG layouts."
+                        : "ऑन-डिमांड लेज़ी लोडिंग और 800 DPI क्वालिटी के साथ तेज़, क्रिस्टल क्लियर पीडीएफ और जेपीईजी एक्सपोर्ट।"
+                      }
+                    </p>
                   </div>
                 </div>
               </div>
@@ -2015,24 +2062,32 @@ export default function App() {
               
               {/* Form Column */}
               <div className="md:col-span-2 bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl rounded-[2rem] border border-slate-200/50 dark:border-slate-700/50 p-6 md:p-8 shadow-xl">
-                <h3 className="text-lg font-black text-slate-800 dark:text-slate-100 mb-1 tracking-tight">अपना अनुभव साझा करें</h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mb-5 font-bold">प्रोजेक्ट पर अपना फीडबैक या राय लिखें:</p>
+                <h3 className="text-lg font-black text-slate-800 dark:text-slate-100 mb-1 tracking-tight">
+                  {isEnglish ? "Share Your Experience" : "अपना अनुभव साझा करें"}
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mb-5 font-bold">
+                  {isEnglish ? "Write your feedback or opinion about the project:" : "प्रोजेक्ट पर अपना फीडबैक या राय लिखें:"}
+                </p>
                 
                 <form onSubmit={handleOpinionSubmit} className="flex flex-col gap-4">
                   <div>
-                    <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">आपका नाम</label>
+                    <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">
+                      {isEnglish ? "Your Name" : "आपका नाम"}
+                    </label>
                     <input 
                       type="text" 
                       value={opinionName}
                       onChange={(e) => setOpinionName(e.target.value)}
-                      placeholder="जैसे: राहुल कुमार"
+                      placeholder={isEnglish ? "e.g., Rahul Kumar" : "जैसे: राहुल कुमार"}
                       required
                       className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">रेटिंग (Rating)</label>
+                    <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">
+                      {isEnglish ? "Rating" : "रेटिंग (Rating)"}
+                    </label>
                     <div className="flex items-center gap-1">
                       {[1, 2, 3, 4, 5].map((star) => (
                         <button
@@ -2055,11 +2110,13 @@ export default function App() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">आपकी राय (Opinion)</label>
+                    <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">
+                      {isEnglish ? "Your Opinion" : "आपकी राय (Opinion)"}
+                    </label>
                     <textarea 
                       value={opinionText}
                       onChange={(e) => setOpinionText(e.target.value)}
-                      placeholder="साइट के बारे में अपनी राय यहाँ लिखें..."
+                      placeholder={isEnglish ? "Write your review about the site here..." : "साइट के बारे में अपनी राय यहाँ लिखें..."}
                       required
                       rows={3}
                       className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition resize-none"
@@ -2070,7 +2127,7 @@ export default function App() {
                     type="submit"
                     className="w-full py-3 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white rounded-xl text-xs font-black shadow-lg shadow-violet-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
                   >
-                    राय सबमिट करें (Submit Opinion)
+                    {isEnglish ? "Submit Opinion" : "राय सबमिट करें (Submit Opinion)"}
                   </button>
                 </form>
               </div>
@@ -2078,7 +2135,7 @@ export default function App() {
               {/* Display Column */}
               <div className="md:col-span-3 flex flex-col gap-4 overflow-y-auto max-h-[390px] pr-2">
                 <h3 className="text-lg font-black text-slate-800 dark:text-slate-100 mb-1 tracking-tight flex items-center gap-2">
-                  <span>उपयोगकर्ताओं की राय</span>
+                  <span>{isEnglish ? "User Opinions" : "उपयोगकर्ताओं की राय"}</span>
                   <span className="text-[11px] bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 px-2 py-0.5 rounded-full font-bold">{opinions.length}</span>
                 </h3>
                 
