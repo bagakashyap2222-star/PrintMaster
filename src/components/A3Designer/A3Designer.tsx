@@ -5,7 +5,7 @@ import {
   Undo2, Redo2, ZoomIn, ZoomOut, Upload, Wand2, RotateCw, ImagePlus, UploadCloud, CropIcon, ImageIcon, SlidersHorizontal, MousePointerClick, Printer,
   ChevronsUp, ChevronsDown, ClipboardPaste, Copy, CheckCheck, Layers, FileText, Text, Eye, EyeOff, Sparkles, Move
 } from 'lucide-react';
-import domtoimage from 'dom-to-image';
+import html2canvas from 'html2canvas-pro';
 
 // Types
 export interface A3Placement {
@@ -912,7 +912,7 @@ export const A3Designer: React.FC<A3DesignerProps> = ({ onClose, initialImages =
     return parts.length > 0 ? parts.join(' ') : undefined;
   };
 
-  // PDF Export 300/600/800 DPI high-quality cloned scaling
+  // PDF Export 300/600/800 DPI high-quality scaling
   const exportPdf = async () => {
     if (isExporting || isPrinting) return;
     const node = canvasRef.current;
@@ -923,37 +923,16 @@ export const A3Designer: React.FC<A3DesignerProps> = ({ onClose, initialImages =
       setSelectedPlacementId(null); // Hide outline indicators
       await new Promise(resolve => setTimeout(resolve, 300)); // Render cycle sync
 
-      const scale = pdfQuality / 96; // 300 DPI scaling
-      const width = node.offsetWidth;
-      const height = node.offsetHeight;
+      const scale = pdfQuality / 96; // DPI scaling
 
-      // Clone DOM node for offscreen high-res render
-      const clone = node.cloneNode(true) as HTMLDivElement;
-      clone.style.transform = `scale(${scale})`;
-      clone.style.transformOrigin = 'top left';
-      clone.style.width = `${width}px`;
-      clone.style.height = `${height}px`;
-
-      const container = document.createElement('div');
-      container.style.position = 'fixed';
-      container.style.top = '-99999px';
-      container.style.left = '-99999px';
-      container.style.width = `${width * scale}px`;
-      container.style.height = `${height * scale}px`;
-      container.style.overflow = 'hidden';
-      container.appendChild(clone);
-      document.body.appendChild(container);
-
-      // Load fonts/images completely
-      await new Promise(r => setTimeout(r, 600));
-
-      const dataUrl = await domtoimage.toJpeg(clone, {
-        width: width * scale,
-        height: height * scale,
-        quality: 0.95
+      const canvas = await html2canvas(node, {
+        scale: scale,
+        useCORS: true,
+        logging: false,
+        ignoreElements: (element) => element.classList.contains('no-print')
       });
 
-      document.body.removeChild(container);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
 
       // Generate PDF doc
       const { default: jsPDF } = await import('jspdf');
@@ -988,7 +967,13 @@ export const A3Designer: React.FC<A3DesignerProps> = ({ onClose, initialImages =
       setSelectedPlacementId(null);
       await new Promise(r => setTimeout(r, 300));
 
-      const dataUrl = await domtoimage.toJpeg(node, { quality: 0.98 });
+      const canvas = await html2canvas(node, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        ignoreElements: (element) => element.classList.contains('no-print')
+      });
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.98);
       
       // Create hidden print iframe
       const printFrame = document.createElement('iframe');

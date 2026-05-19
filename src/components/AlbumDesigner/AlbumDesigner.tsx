@@ -1,8 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { ALBUM_TEMPLATES, AlbumPage, AlbumTemplate, LayoutOrientation, PlacedImage } from './templates';
 import { jsPDF } from 'jspdf';
-import html2canvas from 'html2canvas';
-import domtoimage from 'dom-to-image';
+import html2canvas from 'html2canvas-pro';
 import { 
   Plus, Minus, Layout, Palette, Settings, Type, Shuffle, Maximize2, 
   Trash2, X, Download, LayoutTemplate, Square, ChevronLeft,
@@ -454,44 +453,21 @@ export const AlbumDesigner: React.FC<AlbumDesignerProps> = ({ onClose, initialIm
 
       for (let i = 0; i < pageNodes.length; i++) {
         const node = pageNodes[i] as HTMLElement;
-        const clonedNode = node.cloneNode(true) as HTMLElement;
+        const scale = pdfQuality / 96;
         
-        Object.assign(clonedNode.style, {
-          position: 'fixed',
-          top: '0',
-          left: '0',
-          zIndex: '-9999',
-          transform: 'none',
-          width: orientation === 'portrait' ? '1200px' : '1697px',
-          height: orientation === 'portrait' ? '1697px' : '1200px',
-          backgroundColor: node.getAttribute('data-bg-color') || '#ffffff',
-          visibility: 'visible',
-          opacity: '1'
+        const canvas = await html2canvas(node, {
+          scale: scale,
+          useCORS: true,
+          logging: false,
+          ignoreElements: (element) => element.classList.contains('no-print')
         });
 
-        document.body.appendChild(clonedNode);
+        const imgData = canvas.toDataURL('image/jpeg', 0.95);
         
-        try {
-          const scale = pdfQuality / 96;
-          const imgData = await domtoimage.toJpeg(clonedNode, {
-            quality: 0.95,
-            style: {
-              transform: `scale(${scale})`,
-              transformOrigin: 'top left',
-              width: clonedNode.offsetWidth + 'px',
-              height: clonedNode.offsetHeight + 'px'
-            },
-            width: clonedNode.offsetWidth * scale,
-            height: clonedNode.offsetHeight * scale
-          });
-          
-          if (i > 0) pdf.addPage(format, orientation === 'portrait' ? 'p' : 'l');
-          const w = format[0];
-          const h = format[1];
-          pdf.addImage(imgData, 'JPEG', 0, 0, w, h, undefined, 'FAST');
-        } finally {
-          document.body.removeChild(clonedNode);
-        }
+        if (i > 0) pdf.addPage(format, orientation === 'portrait' ? 'p' : 'l');
+        const w = format[0];
+        const h = format[1];
+        pdf.addImage(imgData, 'JPEG', 0, 0, w, h, undefined, 'FAST');
       }
       
       pdf.save(`PhotoAlbum_${albumSize}.pdf`);
@@ -513,39 +489,15 @@ export const AlbumDesigner: React.FC<AlbumDesignerProps> = ({ onClose, initialIm
       
       for (let i = 0; i < pageNodes.length; i++) {
         const node = pageNodes[i] as HTMLElement;
-        const clonedNode = node.cloneNode(true) as HTMLElement;
         
-        Object.assign(clonedNode.style, {
-          position: 'fixed',
-          top: '0',
-          left: '0',
-          zIndex: '-9999',
-          transform: 'none',
-          width: orientation === 'portrait' ? '1200px' : '1697px',
-          height: orientation === 'portrait' ? '1697px' : '1200px',
-          backgroundColor: node.getAttribute('data-bg-color') || '#ffffff',
-          visibility: 'visible',
-          opacity: '1'
+        const canvas = await html2canvas(node, {
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          ignoreElements: (element) => element.classList.contains('no-print')
         });
-
-        document.body.appendChild(clonedNode);
-        
-        try {
-          const imgData = await domtoimage.toJpeg(clonedNode, {
-            quality: 0.95,
-            width: clonedNode.offsetWidth * 2,
-            height: clonedNode.offsetHeight * 2,
-            style: {
-              transform: 'scale(2)',
-              transformOrigin: 'top left',
-              width: clonedNode.offsetWidth + 'px',
-              height: clonedNode.offsetHeight + 'px'
-            }
-          });
-          dataUrls.push(imgData);
-        } finally {
-          document.body.removeChild(clonedNode);
-        }
+        const imgData = canvas.toDataURL('image/jpeg', 0.95);
+        dataUrls.push(imgData);
       }
 
       const existingIframe = document.getElementById('printIframe');

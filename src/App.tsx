@@ -1,6 +1,7 @@
 import React, { useState, useRef, ChangeEvent, useEffect } from 'react';
 import { jsPDF } from 'jspdf';
-import domtoimage from 'dom-to-image';
+import html2canvas from 'html2canvas-pro';
+
 
 import debounce from 'lodash/debounce';
 import { 
@@ -1215,48 +1216,17 @@ export default function App() {
         }
         
         const originalPage = pagesElements[i] as HTMLElement;
-        const clonedNode = originalPage.cloneNode(true) as HTMLElement;
+        const scale = pdfDpi / 96;
         
-        // Ensure no-print elements are hidden
-        const noPrintElements = clonedNode.querySelectorAll('.no-print');
-        noPrintElements.forEach(el => {
-          (el as HTMLElement).style.display = 'none';
+        const canvas = await html2canvas(originalPage, {
+          scale: scale,
+          useCORS: true,
+          logging: false,
+          ignoreElements: (element) => element.classList.contains('no-print')
         });
-
-        // Set fixed isolated styles to bypass viewport/scroll issues
-        Object.assign(clonedNode.style, {
-          position: 'fixed',
-          top: '0',
-          left: '0',
-          zIndex: '-9999',
-          transform: 'none',
-          padding: '0.3in',
-          width: '8.27in',
-          height: '11.69in',
-          backgroundColor: 'white'
-        });
-
-        document.body.appendChild(clonedNode);
         
-        try {
-          // Standard browser DPI is 96.
-          const scale = pdfDpi / 96;
-          const imgData = await domtoimage.toJpeg(clonedNode, {
-            quality: 0.95,
-            style: {
-              transform: `scale(${scale})`,
-              transformOrigin: 'top left',
-              width: clonedNode.offsetWidth + 'px',
-              height: clonedNode.offsetHeight + 'px'
-            },
-            width: clonedNode.offsetWidth * scale,
-            height: clonedNode.offsetHeight * scale
-          });
-          
-          pdf.addImage(imgData, 'JPEG', 0, 0, 8.27, 11.69);
-        } finally {
-          document.body.removeChild(clonedNode);
-        }
+        const imgData = canvas.toDataURL('image/jpeg', 0.95);
+        pdf.addImage(imgData, 'JPEG', 0, 0, 8.27, 11.69);
       }
       
       pdf.save(`photos_document_${Date.now()}.pdf`);
