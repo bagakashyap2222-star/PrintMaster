@@ -141,6 +141,7 @@ export interface PlacedImage {
   id: string; // unique id in album
   url: string;
   sourceImageId?: string; // id from the global image library
+  originalUrl?: string;
   text?: string;
   filters?: {
     brightness: number;

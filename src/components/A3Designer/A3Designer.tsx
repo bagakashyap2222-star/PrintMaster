@@ -6,7 +6,6 @@ import {
   ChevronsUp, ChevronsDown, ClipboardPaste, Copy, CheckCheck, Layers, FileText, Text, Eye, EyeOff, Sparkles, Move
 } from 'lucide-react';
 import domtoimage from 'dom-to-image';
-import { removeBackground } from '@imgly/background-removal';
 
 // Types
 export interface A3Placement {
@@ -790,8 +789,9 @@ export const A3Designer: React.FC<A3DesignerProps> = ({ onClose, initialImages =
       updateSelectedPlacement({ isRemovingBg: true });
       setIsRemovingBg(true);
 
+      const { removeBackground } = await import('@imgly/background-removal');
       const resultBlob = await removeBackground(p.originalUrl || p.url, {
-        model: 'small', // Speedup active
+        model: 'isnet_quint8', // Speedup active
         progress: (key, current, total) => {
           console.log(`AI Bg Removal Progress: ${Math.round((current / total) * 100)}%`);
         }

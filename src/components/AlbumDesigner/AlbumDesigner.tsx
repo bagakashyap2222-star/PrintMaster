@@ -3,7 +3,6 @@ import { ALBUM_TEMPLATES, AlbumPage, AlbumTemplate, LayoutOrientation, PlacedIma
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 import domtoimage from 'dom-to-image';
-import { removeBackground } from '@imgly/background-removal';
 import { 
   Plus, Minus, Layout, Palette, Settings, Type, Shuffle, Maximize2, 
   Trash2, X, Download, LayoutTemplate, Square, ChevronLeft,
@@ -778,8 +777,9 @@ export const AlbumDesigner: React.FC<AlbumDesignerProps> = ({ onClose, initialIm
     setIsRemovingBg(true);
     try {
       const srcUrl = placement.originalUrl || placement.url;
+      const { removeBackground } = await import('@imgly/background-removal');
       const blob = await removeBackground(srcUrl, { 
-        model: "small",
+        model: "isnet_quint8",
         progress: () => {} 
       });
       const bgRemovedUrl = URL.createObjectURL(blob);

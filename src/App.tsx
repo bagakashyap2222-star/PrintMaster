@@ -1,10 +1,6 @@
 import React, { useState, useRef, ChangeEvent, useEffect } from 'react';
 import { jsPDF } from 'jspdf';
 import domtoimage from 'dom-to-image';
-import * as pdfjsLib from 'pdfjs-dist';
-import { removeBackground } from '@imgly/background-removal';
-
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
 
 import debounce from 'lodash/debounce';
 import { 
@@ -576,8 +572,9 @@ const BgRemoverToolModal = ({ onClose }: { onClose: () => void }) => {
       setIsProcessing(true);
       setErrorMsg("");
       try {
+        const { removeBackground } = await import('@imgly/background-removal');
         const blob = await removeBackground(url, { 
-          model: "small",
+          model: "isnet_quint8",
           progress: () => {} 
         });
         setRemovedBgUrl(URL.createObjectURL(blob));
@@ -857,8 +854,9 @@ export default function App() {
     setImages(prev => prev.map(img => img.id === selectedImageId ? { ...img, isRemovingBg: true } : img));
     try {
       const srcUrl = selectedItem.originalUrl || selectedItem.url;
+      const { removeBackground } = await import('@imgly/background-removal');
       const blob = await removeBackground(srcUrl, { 
-        model: "small",
+        model: "isnet_quint8",
         progress: () => {} 
       });
       const bgRemovedUrl = URL.createObjectURL(blob);
@@ -980,6 +978,10 @@ export default function App() {
       if (file.type === 'application/pdf') {
         try {
           const arrayBuffer = await file.arrayBuffer();
+          const pdfjsLib = await import('pdfjs-dist');
+          if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
+            pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
+          }
           const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
           for (let i = 1; i <= pdf.numPages; i++) {
             const page = await pdf.getPage(i);
