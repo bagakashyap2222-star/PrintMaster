@@ -1,0 +1,104 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-gray-50: var(--ds-gray-50);
+  --color-gray-100: var(--ds-gray-100);
+  --color-gray-200: var(--ds-gray-200);
+  --color-gray-300: var(--ds-gray-300);
+  --color-gray-400: var(--ds-gray-400);
+  --color-gray-500: var(--ds-gray-500);
+  --color-gray-600: var(--ds-gray-600);
+  --color-gray-700: var(--ds-gray-700);
+  --color-gray-800: var(--ds-gray-800);
+  --color-gray-900: var(--ds-gray-900);
+  --color-white: var(--ds-white);
+}
+
+:root {
+  --ds-gray-50: oklch(0.984 0.003 247.858);   /* slate-50 */
+  --ds-gray-100: oklch(0.968 0.007 247.896);  /* slate-100 */
+  --ds-gray-200: oklch(0.929 0.013 255.508);  /* slate-200 */
+  --ds-gray-300: oklch(0.869 0.022 252.894);  /* slate-300 */
+  --ds-gray-400: oklch(0.704 0.04 256.788);   /* slate-400 */
+  --ds-gray-500: oklch(0.554 0.046 257.417);  /* slate-500 */
+  --ds-gray-600: oklch(0.446 0.043 257.281);  /* slate-600 */
+  --ds-gray-700: oklch(0.338 0.039 256.883);  /* slate-700 */
+  --ds-gray-800: oklch(0.233 0.031 257.369);  /* slate-800 */
+  --ds-gray-900: oklch(0.141 0.019 257.281);  /* slate-900 */
+  --ds-white: #ffffff;
+}
+
+.dark {
+  --ds-gray-50: oklch(0.141 0.019 257.281);   /* slate-900 */
+  --ds-gray-100: oklch(0.18 0.025 257.3);     /* darker slate-800 */
+  --ds-gray-200: oklch(0.233 0.031 257.369);  /* slate-800 */
+  --ds-gray-300: oklch(0.338 0.039 256.883);  /* slate-700 */
+  --ds-gray-400: oklch(0.446 0.043 257.281);  /* slate-600 */
+  --ds-gray-500: oklch(0.554 0.046 257.417);  /* slate-500 */
+  --ds-gray-600: oklch(0.704 0.04 256.788);   /* slate-400 */
+  --ds-gray-700: oklch(0.869 0.022 252.894);  /* slate-300 */
+  --ds-gray-800: oklch(0.929 0.013 255.508);  /* slate-200 */
+  --ds-gray-900: oklch(0.968 0.007 247.896);  /* slate-100 */
+  --ds-white: oklch(0.12 0.01 257.2);         /* slate-950 equivalent for pure white elements */
+}
+
+@media print {
+  .dark {
+    --ds-gray-50: oklch(0.984 0.003 247.858);
+    --ds-gray-100: oklch(0.968 0.007 247.896);
+    --ds-gray-200: oklch(0.929 0.013 255.508);
+    --ds-gray-300: oklch(0.869 0.022 252.894);
+    --ds-gray-400: oklch(0.704 0.04 256.788);
+    --ds-gray-500: oklch(0.554 0.046 257.417);
+    --ds-gray-600: oklch(0.446 0.043 257.281);
+    --ds-gray-700: oklch(0.338 0.039 256.883);
+    --ds-gray-800: oklch(0.233 0.031 257.369);
+    --ds-gray-900: oklch(0.141 0.019 257.281);
+    --ds-white: #ffffff;
+  }
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  html, body {
+    width: 8.27in !important;
+    height: auto !important;
+    min-height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background-color: white !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-page {
+    width: 8.27in !important;
+    height: 11.69in !important;
+    margin: 0 !important;
+    padding: 0.3in !important;
+    box-shadow: none !important;
+    background-color: white !important;
+    page-break-after: always !important;
+    break-after: page !important;
+    break-inside: avoid !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+
+  .print-page:last-child {
+    page-break-after: auto !important;
+    break-after: auto !important;
+  }
+}
+
+
